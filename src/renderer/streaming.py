@@ -6,6 +6,10 @@ from collections.abc import Iterable
 from typing import TextIO
 
 
+FILE_BEGIN_MARKER = "BEGIN FILE"
+FILE_END_MARKER = "END FILE"
+
+
 def iter_chunks(text: str, chunk_size: int) -> Iterable[str]:
     if chunk_size <= 0:
         raise ValueError("chunk_size must be positive")
@@ -32,3 +36,13 @@ class ChunkedStdoutWriter:
     def write_lines(self, lines: Iterable[str]) -> None:
         for line in lines:
             self.write(line)
+
+
+def emit_file_header(target: TextIO, filename: str) -> None:
+    target.write(f"{FILE_BEGIN_MARKER} {filename}\n")
+    target.flush()
+
+
+def emit_file_footer(target: TextIO, filename: str) -> None:
+    target.write(f"{FILE_END_MARKER} {filename}\n")
+    target.flush()

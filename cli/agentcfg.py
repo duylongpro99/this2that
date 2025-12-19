@@ -8,6 +8,8 @@ import sys
 from pathlib import Path
 from typing import TextIO
 
+from src.renderer.streaming import emit_file_footer, emit_file_header
+
 
 CHUNK_SIZE = 4096
 WORKSPACE_MARKERS = (".git", "pyproject.toml", "package.json")
@@ -119,7 +121,12 @@ def migrate_command(args: argparse.Namespace) -> int:
     try:
         # Placeholder until the mapping/rendering pipeline is wired in.
         _emit_log(args, "stream_start")
-        _stream_copy(input_stream, output_stream)
+        if output_stream is sys.stdout:
+            emit_file_header(output_stream, output_path)
+            _stream_copy(input_stream, output_stream)
+            emit_file_footer(output_stream, output_path)
+        else:
+            _stream_copy(input_stream, output_stream)
         _emit_log(args, "stream_end")
     finally:
         if input_stream is not sys.stdin:

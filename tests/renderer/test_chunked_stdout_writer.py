@@ -2,7 +2,12 @@ import io
 
 import pytest
 
-from src.renderer.streaming import ChunkedStdoutWriter, iter_chunks
+from src.renderer.streaming import (
+    ChunkedStdoutWriter,
+    emit_file_footer,
+    emit_file_header,
+    iter_chunks,
+)
 
 
 def test_iter_chunks_splits_by_size():
@@ -30,3 +35,12 @@ def test_chunked_stdout_writer_accepts_line_iterables():
     writer.write_lines(["one\n", "two\n", "three\n"])
 
     assert buffer.getvalue() == "one\ntwo\nthree\n"
+
+
+def test_emit_file_header_and_footer():
+    buffer = io.StringIO()
+
+    emit_file_header(buffer, "AGENTS.md")
+    emit_file_footer(buffer, "AGENTS.md")
+
+    assert buffer.getvalue() == "BEGIN FILE AGENTS.md\nEND FILE AGENTS.md\n"

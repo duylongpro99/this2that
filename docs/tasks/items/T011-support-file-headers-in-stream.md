@@ -11,7 +11,7 @@ Wrap streamed files with BEGIN FILE/END FILE markers.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex
 - Target Milestone: TBD
-- Links: N/A
+- Links: cli/agentcfg.py, src/renderer/streaming.py, tests/cli/test_agentcfg_stdio.py, tests/renderer/test_chunked_stdout_writer.py

@@ -28,7 +28,7 @@ def test_migrate_reads_stdin_and_writes_stdout():
         stdin_text="hello\nworld\n",
     )
     assert result.returncode == 0
-    assert result.stdout == "hello\nworld\n"
+    assert result.stdout == "BEGIN FILE -\nhello\nworld\nEND FILE -\n"
     assert result.stderr == ""
 
 
@@ -39,7 +39,7 @@ def test_migrate_reads_file_and_writes_stdout(tmp_path):
         ["migrate", "--from", "claude", "--to", "codex", "--input", str(source), "--output", "-"]
     )
     assert result.returncode == 0
-    assert result.stdout == "file content\n"
+    assert result.stdout == "BEGIN FILE -\nfile content\nEND FILE -\n"
 
 
 def test_migrate_defaults_to_workspace_root_paths(tmp_path):
@@ -89,7 +89,7 @@ def test_migrate_dry_run_outputs_stdout_without_writing_file(tmp_path):
     )
 
     assert result.returncode == 0
-    assert result.stdout == "preview\n"
+    assert result.stdout == f"BEGIN FILE {output}\npreview\nEND FILE {output}\n"
     assert result.stderr == ""
     assert not output.exists()
 
@@ -103,7 +103,8 @@ def test_migrate_dry_run_skips_default_output_write(tmp_path):
     result = run_agentcfg(["migrate", "--from", "claude", "--to", "codex", "--dry-run"], cwd=repo)
 
     assert result.returncode == 0
-    assert result.stdout == "root content\n"
+    expected_output = repo / "AGENTS.md"
+    assert result.stdout == f"BEGIN FILE {expected_output}\nroot content\nEND FILE {expected_output}\n"
     assert result.stderr == ""
     assert not (repo / "AGENTS.md").exists()
 
@@ -127,7 +128,7 @@ def test_migrate_verbose_logs_events(tmp_path):
     )
 
     assert result.returncode == 0
-    assert result.stdout == "log me\n"
+    assert result.stdout == "BEGIN FILE -\nlog me\nEND FILE -\n"
     assert "resolved_paths" in result.stderr
     assert "stream_start" in result.stderr
     assert "stream_end" in result.stderr
@@ -152,6 +153,6 @@ def test_migrate_json_logs_events(tmp_path):
     )
 
     assert result.returncode == 0
-    assert result.stdout == "json logs\n"
+    assert result.stdout == "BEGIN FILE -\njson logs\nEND FILE -\n"
     events = [json.loads(line)["event"] for line in result.stderr.strip().splitlines()]
     assert events == ["resolved_paths", "stream_start", "stream_end"]
