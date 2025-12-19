@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 from typing import TextIO
@@ -84,18 +85,42 @@ def _resolve_paths(args: argparse.Namespace) -> tuple[str, str]:
     return resolved_input, resolved_output
 
 
+def _emit_log(args: argparse.Namespace, event: str, **fields: str) -> None:
+    if not (args.verbose or args.json_log):
+        return
+    if args.json_log:
+        payload = {"event": event, **fields}
+        print(json.dumps(payload, ensure_ascii=True), file=sys.stderr)
+        return
+    details = " ".join(f"{key}={value}" for key, value in fields.items())
+    message = f"{event} {details}".strip()
+    print(message, file=sys.stderr)
+
+
 def migrate_command(args: argparse.Namespace) -> int:
     try:
         input_path, output_path = _resolve_paths(args)
     except (FileNotFoundError, ValueError) as exc:
-        print(f"error: {exc}", file=sys.stderr)
+        if args.json_log:
+            _emit_log(args, "error", message=str(exc))
+        else:
+            print(f"error: {exc}", file=sys.stderr)
         return 2
 
+    _emit_log(
+        args,
+        "resolved_paths",
+        input=input_path,
+        output=output_path,
+        dry_run=str(args.dry_run),
+    )
     input_stream = _open_input(input_path)
     output_stream = sys.stdout if args.dry_run else _open_output(output_path)
     try:
         # Placeholder until the mapping/rendering pipeline is wired in.
+        _emit_log(args, "stream_start")
         _stream_copy(input_stream, output_stream)
+        _emit_log(args, "stream_end")
     finally:
         if input_stream is not sys.stdin:
             input_stream.close()
@@ -114,6 +139,8 @@ def build_parser() -> argparse.ArgumentParser:
     migrate.add_argument("--input")
     migrate.add_argument("--output")
     migrate.add_argument("--dry-run", action="store_true")
+    migrate.add_argument("--verbose", action="store_true")
+    migrate.add_argument("--json-log", action="store_true")
     migrate.set_defaults(func=migrate_command)
 
     return parser

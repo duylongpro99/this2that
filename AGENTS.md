@@ -13,6 +13,7 @@
 - Prefer reproducible envs (e.g., `.python-version` + `uv`/`pip-tools` or `npm ci`) and pin dependencies.
 - Must use `uv` for Python environments and package installs (no `pip`/`python3` direct usage).
 - Package installs must go through `uv` (e.g., `uv pip install ...`).
+- Run tests via `uv` (e.g., `uv run pytest ...`); do not invoke `python -m pytest` directly.
 
 ## Coding Style & Naming Conventions
 - Markdown: sentence-case headings, bullet lists over long paragraphs, wrap at ~100 chars, fenced code blocks for commands.
@@ -42,3 +43,4 @@
 - 2025-12-19: codex completed T006; added CLI stdin/stdout streaming scaffold and tests.
 - 2025-12-19: codex completed T007; added workspace auto-detection defaults and tests.
 - 2025-12-19: codex completed T008; added dry-run CLI flag and tests.
+- 2025-12-19: codex completed T009; added verbose/json CLI logs and tests.

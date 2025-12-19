@@ -1,3 +1,4 @@
+import json
 import os
 import subprocess
 import sys
@@ -105,3 +106,52 @@ def test_migrate_dry_run_skips_default_output_write(tmp_path):
     assert result.stdout == "root content\n"
     assert result.stderr == ""
     assert not (repo / "AGENTS.md").exists()
+
+
+def test_migrate_verbose_logs_events(tmp_path):
+    source = tmp_path / "source.md"
+    source.write_text("log me\n", encoding="utf-8")
+    result = run_agentcfg(
+        [
+            "migrate",
+            "--from",
+            "claude",
+            "--to",
+            "codex",
+            "--input",
+            str(source),
+            "--output",
+            "-",
+            "--verbose",
+        ]
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == "log me\n"
+    assert "resolved_paths" in result.stderr
+    assert "stream_start" in result.stderr
+    assert "stream_end" in result.stderr
+
+
+def test_migrate_json_logs_events(tmp_path):
+    source = tmp_path / "source.md"
+    source.write_text("json logs\n", encoding="utf-8")
+    result = run_agentcfg(
+        [
+            "migrate",
+            "--from",
+            "claude",
+            "--to",
+            "codex",
+            "--input",
+            str(source),
+            "--output",
+            "-",
+            "--json-log",
+        ]
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == "json logs\n"
+    events = [json.loads(line)["event"] for line in result.stderr.strip().splitlines()]
+    assert events == ["resolved_paths", "stream_start", "stream_end"]
