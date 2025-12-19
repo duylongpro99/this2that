@@ -34,3 +34,4 @@
 ## Agent activity
 - 2025-12-19: codex completed T001; documented initial supported agents and normalization.
 - 2025-12-19: codex completed T002; documented canonical config artifacts per agent.
+- 2025-12-19: codex completed T003; documented supported migration modes.

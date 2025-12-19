@@ -66,6 +66,12 @@ Context7’s job is to inject up-to-date, version-specific docs into the LLM con
 * `gemini`: `GEMINI.md` (single-file instructions)
 * `kiro`: `.kiro/steering/*.md` (multi-file steering bundle)
 
+**Supported migration modes**
+
+* single-file -> single-file (phase 1)
+* multi-file -> single-file (phase 1)
+* single-file -> multi-file (phase 2)
+
 ---
 
 ### 2.2 Documentation Fetcher (Context7 integration)
