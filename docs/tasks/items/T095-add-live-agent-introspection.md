@@ -1,0 +1,17 @@
+# Task T095 — Add live agent introspection
+
+**Epic:** EPIC 12 — Future Roadmap (Optional)
+**Story:** Future Roadmap
+**Source:** docs/tasks/epics.md
+
+## Goal
+Optional: add live agent introspection capability.
+
+## Definition of Done
+- Goal is documented, implemented, or planned with clear owner and status.
+- Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
+## Tracking
+- Status: TODO
+- Owner: Unassigned
+- Target Milestone: TBD
+- Links: N/A

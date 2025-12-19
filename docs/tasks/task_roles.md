@@ -1,0 +1,100 @@
+# Task roles
+
+Use this map to assign the right engineer role when working on any task.
+
+## Role mapping
+- T001 identify initial supported agents — Registry and detection engineer
+- T002 define supported config artifacts per agent — Registry and detection engineer
+- T003 define migration modes — Platform engineer
+- T004 define non-goals — Quality and release engineer
+- T005 define CLI syntax — Platform engineer
+- T006 support stdin and stdout streaming — Platform engineer
+- T007 support workspace auto-detection — Registry and detection engineer
+- T008 add dry-run mode — Platform engineer
+- T009 add verbose and json log flags — Platform engineer
+- T010 implement chunked stdout writer — Mapping and renderer engineer
+- T011 support file headers in stream — Mapping and renderer engineer
+- T012 stream per section — Mapping and renderer engineer
+- T013 handle multi-file streaming — Mapping and renderer engineer
+- T014 create FastMCP server entrypoint — Platform engineer
+- T015 register server metadata — Platform engineer
+- T016 enable stdio transport — Platform engineer
+- T017 add structured logging hooks — Platform engineer
+- T018 define MCP tools — Platform engineer
+- T019 define MCP resources — Platform engineer
+- T020 define MCP prompt — Mapping and renderer engineer
+- T021 validate MCP schemas — Quality and release engineer
+- T022 create agent registry data model — Registry and detection engineer
+- T023 store agent metadata fields — Registry and detection engineer
+- T024 add runtime validation for unknown agents — Registry and detection engineer
+- T025 enable dynamic extension via plugins — Registry and detection engineer
+- T026 implement recursive search rules — Registry and detection engineer
+- T027 support root-level configs — Registry and detection engineer
+- T028 support nested overrides — Registry and detection engineer
+- T029 support multi-file folders — Registry and detection engineer
+- T030 return ordered candidates with confidence — Registry and detection engineer
+- T031 define Context7 query templates — Parser and ontology engineer
+- T032 implement doc fetch orchestration strategy — Parser and ontology engineer
+- T033 add TTL-based caching layer — Platform engineer
+- T034 extract documentation into AgentDocModel inputs — Parser and ontology engineer
+- T035 normalize docs into AgentDocModel — Parser and ontology engineer
+- T036 detect version differences and warn — Quality and release engineer
+- T037 implement markdown AST parsing — Parser and ontology engineer
+- T038 identify headings, lists, and code blocks — Parser and ontology engineer
+- T039 preserve ordering and grouping — Parser and ontology engineer
+- T040 support inline directives and comments — Parser and ontology engineer
+- T041 parse Kiro steering folder — Parser and ontology engineer
+- T042 classify Kiro files by intent — Parser and ontology engineer
+- T043 merge Kiro files into source IR — Parser and ontology engineer
+- T044 define ontology categories — Parser and ontology engineer
+- T045 define required vs optional concepts — Parser and ontology engineer
+- T046 version ontology — Parser and ontology engineer
+- T047 map sections to ontology concepts — Parser and ontology engineer
+- T048 handle ambiguous sections — Parser and ontology engineer
+- T049 preserve raw text with semantic tags — Parser and ontology engineer
+- T050 emit warnings for unclassified sections — Parser and ontology engineer
+- T051 define mapping rules per agent pair — Mapping and renderer engineer
+- T052 support 1-to-1 mappings — Mapping and renderer engineer
+- T053 support many-to-one collapses — Mapping and renderer engineer
+- T054 support one-to-many expansions — Mapping and renderer engineer
+- T055 add fallback rules for unsupported features — Mapping and renderer engineer
+- T056 detect unsupported concepts — Mapping and renderer engineer
+- T057 add output warnings for gaps — Mapping and renderer engineer
+- T058 enforce target-specific limits — Mapping and renderer engineer
+- T059 provide downgrade strategies — Mapping and renderer engineer
+- T060 implement Claude renderer — Mapping and renderer engineer
+- T061 implement Codex renderer — Mapping and renderer engineer
+- T062 implement Gemini renderer — Mapping and renderer engineer
+- T063 implement Kiro renderer — Mapping and renderer engineer
+- T064 enforce target naming conventions — Mapping and renderer engineer
+- T065 ensure deterministic ordering — Mapping and renderer engineer
+- T066 emit content per section — Mapping and renderer engineer
+- T067 flush after each chunk — Mapping and renderer engineer
+- T068 support resumable generation — Mapping and renderer engineer
+- T069 integrate streaming with CLI manager — Platform engineer
+- T070 validate markdown structure — Quality and release engineer
+- T071 validate filename correctness — Quality and release engineer
+- T072 validate agent constraints — Quality and release engineer
+- T073 run simulated agent read checks — Quality and release engineer
+- T074 create golden fixture Claude to Codex — Quality and release engineer
+- T075 create golden fixture Gemini to Codex — Quality and release engineer
+- T076 create golden fixture Codex to Claude — Quality and release engineer
+- T077 snapshot test output — Quality and release engineer
+- T078 add doc version-based regression tests — Quality and release engineer
+- T079 define agent plugin interface — Registry and detection engineer
+- T080 allow plugins to define registry entry — Registry and detection engineer
+- T081 allow plugins to define parser — Parser and ontology engineer
+- T082 allow plugins to define renderer — Mapping and renderer engineer
+- T083 allow plugins to define mapping rules — Mapping and renderer engineer
+- T084 document plugin authoring guide — Quality and release engineer
+- T085 write CLI usage docs — Quality and release engineer
+- T086 write migration examples — Quality and release engineer
+- T087 explain limitations and warnings — Quality and release engineer
+- T088 provide troubleshooting guide — Quality and release engineer
+- T089 create demo repos per agent — Quality and release engineer
+- T090 provide before and after configs — Quality and release engineer
+- T091 add CI check demonstrating migration — Quality and release engineer
+- T092 build interactive diff viewer — Platform engineer
+- T093 develop IDE plugin — Platform engineer
+- T094 support bidirectional sync mode — Platform engineer
+- T095 add live agent introspection — Platform engineer
