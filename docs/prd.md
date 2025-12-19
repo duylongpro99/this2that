@@ -21,6 +21,12 @@ When assigning work, pick the matching role brief in `docs/roles/` and use the t
 
 * **Streamed Output (Chunked Generation):** To handle large config content and avoid one monolithic response, the tool should output the converted file in a streamed or section-by-section manner. For instance, it can generate each section of the target config sequentially (perhaps one heading or file at a time) rather than bundling the entire file in one reply. This ensures the conversion can scale to lengthy configs without hitting context limits, and lets users review parts incrementally. If multiple files need to be produced (e.g. Kiro’s multiple steering files), it will output them one by one.
 
+## Non-goals
+
+* Convert or manage runtime binary configs (only markdown-based agent configs are in scope).
+* Handle auth secrets, API keys, or credential storage (users must manage secrets separately).
+* Rewrite application code or refactor repositories during migration (config-only scope).
+
 With these requirements in mind, below is a step-by-step plan for building the migration tool using FastMCP and Context7.
 
 ## Solution Outline

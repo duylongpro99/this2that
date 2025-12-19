@@ -11,9 +11,14 @@ When implementing any component, pick the matching role brief in `docs/roles/` a
 
 **Responsibility:** user-facing command, file IO, streaming output.
 
-* `agentcfg migrate --from claude --to codex --in CLAUDE.md --out AGENTS.md`
+* `agentcfg migrate --from claude --to codex --input CLAUDE.md --output AGENTS.md`
 * Streams *each output file* to stdout / target path **incrementally** (section-by-section or file-by-file).
 * Handles workspace detection (repo root, subdir, etc.).
+
+**CLI syntax (initial)**
+
+* Command: `agentcfg migrate`
+* Required flags: `--from <agent>` `--to <agent>` `--input <path>` `--output <path>`
 
 ### B. MCP Orchestrator Layer (FastMCP server)
 

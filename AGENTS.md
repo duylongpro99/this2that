@@ -35,3 +35,5 @@
 - 2025-12-19: codex completed T001; documented initial supported agents and normalization.
 - 2025-12-19: codex completed T002; documented canonical config artifacts per agent.
 - 2025-12-19: codex completed T003; documented supported migration modes.
+- 2025-12-19: codex completed T004; documented non-goals in the PRD.
+- 2025-12-19: codex completed T005; documented CLI syntax and required flags.
