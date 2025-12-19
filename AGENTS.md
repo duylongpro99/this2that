@@ -11,6 +11,8 @@
 ## Build, Test, and Development Commands
 - No build tooling exists yet. When introducing code, add a `Makefile` with `make lint` (static checks) and `make test` (unit/integration), and document any extra setup in this section.
 - Prefer reproducible envs (e.g., `.python-version` + `uv`/`pip-tools` or `npm ci`) and pin dependencies.
+- Must use `uv` for Python environments and package installs (no `pip`/`python3` direct usage).
+- Package installs must go through `uv` (e.g., `uv pip install ...`).
 
 ## Coding Style & Naming Conventions
 - Markdown: sentence-case headings, bullet lists over long paragraphs, wrap at ~100 chars, fenced code blocks for commands.
@@ -37,3 +39,4 @@
 - 2025-12-19: codex completed T003; documented supported migration modes.
 - 2025-12-19: codex completed T004; documented non-goals in the PRD.
 - 2025-12-19: codex completed T005; documented CLI syntax and required flags.
+- 2025-12-19: codex completed T006; added CLI stdin/stdout streaming scaffold and tests.

@@ -14,6 +14,7 @@ When implementing any component, pick the matching role brief in `docs/roles/` a
 * `agentcfg migrate --from claude --to codex --input CLAUDE.md --output AGENTS.md`
 * Streams *each output file* to stdout / target path **incrementally** (section-by-section or file-by-file).
 * Handles workspace detection (repo root, subdir, etc.).
+* Implementation entrypoint: `cli/agentcfg.py`.
 
 **CLI syntax (initial)**
 
