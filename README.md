@@ -7,6 +7,8 @@
 ## CLI usage
 - Command: `agentcfg migrate --from <agent> --to <agent> --input <path|-> --output <path|->`
 - Use `-` for stdin or stdout to stream data.
+- If `--input` or `--output` is omitted, the CLI defaults to the workspace root and agent
+  canonical filenames.
 
 ## Development setup
 - Requires Python 3.11+ and `uv`.

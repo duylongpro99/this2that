@@ -19,7 +19,9 @@ When implementing any component, pick the matching role brief in `docs/roles/` a
 **CLI syntax (initial)**
 
 * Command: `agentcfg migrate`
-* Required flags: `--from <agent>` `--to <agent>` `--input <path>` `--output <path>`
+* Required flags: `--from <agent>` `--to <agent>`
+* Optional flags: `--input <path>` `--output <path>` (defaults to workspace root + canonical
+  filenames)
 
 ### B. MCP Orchestrator Layer (FastMCP server)
 
