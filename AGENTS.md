@@ -44,3 +44,4 @@
 - 2025-12-19: codex completed T007; added workspace auto-detection defaults and tests.
 - 2025-12-19: codex completed T008; added dry-run CLI flag and tests.
 - 2025-12-19: codex completed T009; added verbose/json CLI logs and tests.
+- 2025-12-19: codex completed T010; implemented chunked stdout writer utilities and tests.
