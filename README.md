@@ -5,7 +5,7 @@
 - Current CLI streams input to output without transformation while core mapping is built.
 
 ## CLI usage
-- Command: `agentcfg migrate --from <agent> --to <agent> --input <path|-> --output <path|->`
+- Command: `agentcfg migrate --from <agent> --to <agent> --input <path|-> --output <path|-> [--dry-run]`
 - Use `-` for stdin or stdout to stream data.
 - If `--input` or `--output` is omitted, the CLI defaults to the workspace root and agent
   canonical filenames.

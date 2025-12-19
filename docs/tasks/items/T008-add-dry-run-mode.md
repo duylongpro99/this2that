@@ -11,7 +11,11 @@ Introduce --dry-run flag to preview migration without writing files.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: done
+- Owner: codex
 - Target Milestone: TBD
-- Links: N/A
+- Claimed: 2025-12-19
+- Links:
+  - CLI: `cli/agentcfg.py`
+  - Tests: `tests/cli/test_agentcfg_stdio.py`
+  - Docs: `README.md`

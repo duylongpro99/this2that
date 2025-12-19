@@ -41,3 +41,4 @@
 - 2025-12-19: codex completed T005; documented CLI syntax and required flags.
 - 2025-12-19: codex completed T006; added CLI stdin/stdout streaming scaffold and tests.
 - 2025-12-19: codex completed T007; added workspace auto-detection defaults and tests.
+- 2025-12-19: codex completed T008; added dry-run CLI flag and tests.

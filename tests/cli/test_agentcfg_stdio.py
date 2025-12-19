@@ -65,3 +65,43 @@ def test_migrate_missing_default_input_errors(tmp_path):
 
     assert result.returncode == 2
     assert "CLAUDE.md" in result.stderr
+
+
+def test_migrate_dry_run_outputs_stdout_without_writing_file(tmp_path):
+    source = tmp_path / "source.md"
+    source.write_text("preview\n", encoding="utf-8")
+    output = tmp_path / "out.md"
+
+    result = run_agentcfg(
+        [
+            "migrate",
+            "--from",
+            "claude",
+            "--to",
+            "codex",
+            "--input",
+            str(source),
+            "--output",
+            str(output),
+            "--dry-run",
+        ]
+    )
+
+    assert result.returncode == 0
+    assert result.stdout == "preview\n"
+    assert result.stderr == ""
+    assert not output.exists()
+
+
+def test_migrate_dry_run_skips_default_output_write(tmp_path):
+    repo = tmp_path / "repo"
+    repo.mkdir()
+    (repo / ".git").mkdir()
+    (repo / "CLAUDE.md").write_text("root content\n", encoding="utf-8")
+
+    result = run_agentcfg(["migrate", "--from", "claude", "--to", "codex", "--dry-run"], cwd=repo)
+
+    assert result.returncode == 0
+    assert result.stdout == "root content\n"
+    assert result.stderr == ""
+    assert not (repo / "AGENTS.md").exists()

@@ -92,7 +92,7 @@ def migrate_command(args: argparse.Namespace) -> int:
         return 2
 
     input_stream = _open_input(input_path)
-    output_stream = _open_output(output_path)
+    output_stream = sys.stdout if args.dry_run else _open_output(output_path)
     try:
         # Placeholder until the mapping/rendering pipeline is wired in.
         _stream_copy(input_stream, output_stream)
@@ -113,6 +113,7 @@ def build_parser() -> argparse.ArgumentParser:
     migrate.add_argument("--to", dest="target_agent", required=True)
     migrate.add_argument("--input")
     migrate.add_argument("--output")
+    migrate.add_argument("--dry-run", action="store_true")
     migrate.set_defaults(func=migrate_command)
 
     return parser
