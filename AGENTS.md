@@ -51,3 +51,4 @@
 - 2025-12-20: codex completed T015; registered MCP server metadata.
 - 2025-12-20: codex completed T016; validated stdio transport wiring for MCP server.
 - 2025-12-20: codex completed T017; added structured logging hooks for MCP server operations.
+- 2025-12-20: codex completed T018; defined MCP tools with placeholder registrations.

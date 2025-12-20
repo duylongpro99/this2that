@@ -13,6 +13,12 @@ from importlib import metadata
 SERVER_NAME = "agentcfg-migrator"
 SERVER_DESCRIPTION = "Agent configuration migrator MCP server."
 DEFAULT_VERSION = "0.0.0"
+TOOL_DEFINITIONS = (
+    ("detect_agent_config", "Detect candidate agent configs in a workspace."),
+    ("parse_config", "Parse config files into a normalized representation."),
+    ("map_config", "Map source configs to a target agent representation."),
+    ("render_target", "Render target agent config output."),
+)
 
 _LOGGER = logging.getLogger("agentcfg.mcp")
 
@@ -71,7 +77,7 @@ def _server_version() -> str:
 
 def _server_capabilities() -> dict[str, list[str]]:
     return {
-        "tools": [],
+        "tools": [name for name, _ in TOOL_DEFINITIONS],
         "resources": [],
         "prompts": [],
     }
@@ -98,6 +104,54 @@ def _init_server(FastMCP: type, metadata_payload: dict[str, Any]) -> Any:
         return FastMCP(metadata_payload["name"])
 
 
+def detect_agent_config(workspace_path: str) -> dict[str, object]:
+    """Placeholder MCP tool for workspace detection."""
+    return {"workspace_path": workspace_path, "candidates": []}
+
+
+def parse_config(agent: str, files: list[str]) -> dict[str, object]:
+    """Placeholder MCP tool for parsing agent configs."""
+    return {"agent": agent, "files": files, "sections": []}
+
+
+def map_config(
+    source_ir: dict[str, object],
+    target_agent: str,
+    doc_snippets: list[dict[str, object]] | None = None,
+) -> dict[str, object]:
+    """Placeholder MCP tool for mapping source configs to a target agent."""
+    return {
+        "source": source_ir,
+        "target_agent": target_agent,
+        "doc_snippets": doc_snippets or [],
+        "mapped_sections": [],
+    }
+
+
+def render_target(target_ir: dict[str, object]) -> dict[str, object]:
+    """Placeholder MCP tool for rendering target config output."""
+    return {"target": target_ir, "files": []}
+
+
+def _register_tools(server: Any) -> None:
+    tool_attr = getattr(server, "tool", None)
+    if not callable(tool_attr):
+        _log_event("tool_register_skipped", reason="tool_not_available")
+        return
+    for name, description in TOOL_DEFINITIONS:
+        func = globals()[name]
+        try:
+            decorator = tool_attr(name=name, description=description)
+            decorator(func)
+        except TypeError:
+            try:
+                tool_attr(func)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                _log_event("tool_register_error", tool=name, message=str(exc))
+                continue
+        _log_event("tool_register_complete", tool=name)
+
+
 def _apply_metadata(server: Any, metadata_payload: dict[str, Any]) -> None:
     if hasattr(server, "metadata"):
         try:
@@ -118,6 +172,7 @@ def build_server() -> Any:
     )
     server = _init_server(FastMCP, metadata_payload)
     _apply_metadata(server, metadata_payload)
+    _register_tools(server)
     _log_event("server_build_complete", name=metadata_payload["name"])
     return server
 
