@@ -19,6 +19,10 @@ TOOL_DEFINITIONS = (
     ("map_config", "Map source configs to a target agent representation."),
     ("render_target", "Render target agent config output."),
 )
+RESOURCE_DEFINITIONS = (
+    ("agent_registry", "Supported agents and config artifacts."),
+    ("concept_ontology", "Normalized concept ontology definitions."),
+)
 
 _LOGGER = logging.getLogger("agentcfg.mcp")
 
@@ -78,7 +82,7 @@ def _server_version() -> str:
 def _server_capabilities() -> dict[str, list[str]]:
     return {
         "tools": [name for name, _ in TOOL_DEFINITIONS],
-        "resources": [],
+        "resources": [name for name, _ in RESOURCE_DEFINITIONS],
         "prompts": [],
     }
 
@@ -133,6 +137,16 @@ def render_target(target_ir: dict[str, object]) -> dict[str, object]:
     return {"target": target_ir, "files": []}
 
 
+def agent_registry() -> dict[str, object]:
+    """Placeholder MCP resource for agent registry data."""
+    return {"agents": []}
+
+
+def concept_ontology() -> dict[str, object]:
+    """Placeholder MCP resource for ontology data."""
+    return {"version": "v0", "concepts": []}
+
+
 def _register_tools(server: Any) -> None:
     tool_attr = getattr(server, "tool", None)
     if not callable(tool_attr):
@@ -150,6 +164,25 @@ def _register_tools(server: Any) -> None:
                 _log_event("tool_register_error", tool=name, message=str(exc))
                 continue
         _log_event("tool_register_complete", tool=name)
+
+
+def _register_resources(server: Any) -> None:
+    resource_attr = getattr(server, "resource", None)
+    if not callable(resource_attr):
+        _log_event("resource_register_skipped", reason="resource_not_available")
+        return
+    for name, description in RESOURCE_DEFINITIONS:
+        func = globals()[name]
+        try:
+            decorator = resource_attr(name=name, description=description)
+            decorator(func)
+        except TypeError:
+            try:
+                resource_attr(func)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                _log_event("resource_register_error", resource=name, message=str(exc))
+                continue
+        _log_event("resource_register_complete", resource=name)
 
 
 def _apply_metadata(server: Any, metadata_payload: dict[str, Any]) -> None:
@@ -173,6 +206,7 @@ def build_server() -> Any:
     server = _init_server(FastMCP, metadata_payload)
     _apply_metadata(server, metadata_payload)
     _register_tools(server)
+    _register_resources(server)
     _log_event("server_build_complete", name=metadata_payload["name"])
     return server
 
