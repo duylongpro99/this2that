@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable
 from typing import TextIO
 
 
 FILE_BEGIN_MARKER = "BEGIN FILE"
 FILE_END_MARKER = "END FILE"
+HEADING_PATTERN = re.compile(r"^#{1,6}\s")
 
 
 def iter_chunks(text: str, chunk_size: int) -> Iterable[str]:
@@ -46,3 +48,25 @@ def emit_file_header(target: TextIO, filename: str) -> None:
 def emit_file_footer(target: TextIO, filename: str) -> None:
     target.write(f"{FILE_END_MARKER} {filename}\n")
     target.flush()
+
+
+def stream_markdown_sections(source: TextIO, target: TextIO) -> None:
+    buffer: list[str] = []
+    in_code_block = False
+
+    def flush_buffer() -> None:
+        if not buffer:
+            return
+        target.write("".join(buffer))
+        target.flush()
+        buffer.clear()
+
+    for line in source:
+        stripped = line.strip()
+        if stripped.startswith("```"):
+            in_code_block = not in_code_block
+        if not in_code_block and HEADING_PATTERN.match(line):
+            flush_buffer()
+        buffer.append(line)
+
+    flush_buffer()

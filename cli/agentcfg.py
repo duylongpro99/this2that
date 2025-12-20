@@ -8,7 +8,11 @@ import sys
 from pathlib import Path
 from typing import TextIO
 
-from src.renderer.streaming import emit_file_footer, emit_file_header
+from src.renderer.streaming import (
+    emit_file_footer,
+    emit_file_header,
+    stream_markdown_sections,
+)
 
 
 CHUNK_SIZE = 4096
@@ -123,7 +127,7 @@ def migrate_command(args: argparse.Namespace) -> int:
         _emit_log(args, "stream_start")
         if output_stream is sys.stdout:
             emit_file_header(output_stream, output_path)
-            _stream_copy(input_stream, output_stream)
+            stream_markdown_sections(input_stream, output_stream)
             emit_file_footer(output_stream, output_path)
         else:
             _stream_copy(input_stream, output_stream)
