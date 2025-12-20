@@ -47,3 +47,4 @@
 - 2025-12-19: codex completed T010; implemented chunked stdout writer utilities and tests.
 - 2025-12-19: codex completed T012; streamed stdout per markdown section with tests.
 - 2025-12-20: codex completed T013; added multi-file streaming helper and tests.
+- 2025-12-20: codex completed T014; added FastMCP server entrypoint bootstrap.

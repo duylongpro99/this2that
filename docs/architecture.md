@@ -27,6 +27,7 @@ When implementing any component, pick the matching role brief in `docs/roles/` a
 
 **Responsibility:** expose “migration brain” as MCP tools/resources to any MCP client (Codex/Claude/Cursor/etc.).
 FastMCP is designed to build MCP servers by decorating Python functions as tools/resources. ([FastMCP][1])
+Implementation entrypoint: `cli/agentcfg_mcp.py` with server logic in `src/mcp/server.py`.
 
 ### C. Intelligence Layer (Doc-driven concept mapping)
 
