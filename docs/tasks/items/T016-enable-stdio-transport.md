@@ -11,7 +11,8 @@ Wire stdio transport so CLI can talk to the MCP server.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex (2025-12-20)
+- Claimed: codex (2025-12-20)
 - Target Milestone: TBD
-- Links: N/A
+- Links: src/mcp/server.py, tests/mcp/test_server_stdio.py

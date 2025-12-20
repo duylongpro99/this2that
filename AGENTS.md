@@ -49,3 +49,4 @@
 - 2025-12-20: codex completed T013; added multi-file streaming helper and tests.
 - 2025-12-20: codex completed T014; added FastMCP server entrypoint bootstrap.
 - 2025-12-20: codex completed T015; registered MCP server metadata.
+- 2025-12-20: codex completed T016; validated stdio transport wiring for MCP server.
