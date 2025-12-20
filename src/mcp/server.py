@@ -12,6 +12,8 @@ from typing import Any, Callable, Union, get_args, get_origin, get_type_hints
 import tomllib
 from importlib import metadata
 
+from src.registry import default_registry
+
 SERVER_NAME = "agentcfg-migrator"
 SERVER_DESCRIPTION = "Agent configuration migrator MCP server."
 DEFAULT_VERSION = "0.0.0"
@@ -256,8 +258,8 @@ def render_target(target_ir: dict[str, object]) -> dict[str, object]:
 
 
 def agent_registry() -> dict[str, object]:
-    """Placeholder MCP resource for agent registry data."""
-    return {"agents": []}
+    """MCP resource for agent registry data."""
+    return default_registry().to_dict()
 
 
 def concept_ontology() -> dict[str, object]:

@@ -50,6 +50,7 @@ Context7’s job is to inject up-to-date, version-specific docs into the LLM con
 
 * Supported agent IDs (claude, codex, gemini, kiro, …)
 * For each agent: canonical config “artifacts” (filenames, folders, precedence rules)
+* Implementation: `src/registry/models.py` defines the registry data model and defaults.
 
   * Example: Codex discovers `AGENTS.md` in global and project scope with precedence and size limits. ([OpenAI Developers][3])
 
