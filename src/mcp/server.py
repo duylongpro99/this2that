@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import inspect
 import json
 import logging
+import types
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, Union, get_args, get_origin, get_type_hints
 
 import tomllib
 from importlib import metadata
@@ -28,6 +30,8 @@ PROMPT_DEFINITIONS = (
 )
 
 _LOGGER = logging.getLogger("agentcfg.mcp")
+_NONE_TYPE = type(None)
+_PRIMITIVE_SCHEMA_TYPES = {str, int, float, bool, object}
 
 
 def _log_event(event: str, **fields: object) -> None:
@@ -37,6 +41,117 @@ def _log_event(event: str, **fields: object) -> None:
 
 class FastMCPLoadError(RuntimeError):
     """Raised when FastMCP is not installed."""
+
+
+class SchemaValidationError(ValueError):
+    """Raised when MCP schema validation fails."""
+
+
+def _is_schema_type(annotation: object) -> bool:
+    if annotation in _PRIMITIVE_SCHEMA_TYPES:
+        return True
+    origin = get_origin(annotation)
+    if origin in (list, dict):
+        args = get_args(annotation)
+        if origin is list:
+            if len(args) != 1:
+                return False
+            return _is_schema_type(args[0])
+        if len(args) != 2 or args[0] is not str:
+            return False
+        return _is_schema_type(args[1])
+    if origin in (Union, types.UnionType):
+        return all(arg is _NONE_TYPE or _is_schema_type(arg) for arg in get_args(annotation))
+    return False
+
+
+def _validate_callable_schema(label: str, func: Callable[..., Any]) -> list[str]:
+    errors: list[str] = []
+    signature = inspect.signature(func)
+    type_hints = get_type_hints(func, globalns=globals(), localns=locals())
+    for param in signature.parameters.values():
+        if param.kind in (param.VAR_POSITIONAL, param.VAR_KEYWORD):
+            errors.append(f"{label} uses varargs which are not MCP-schema compatible")
+            continue
+        annotation = type_hints.get(param.name, param.annotation)
+        if annotation is inspect._empty:
+            errors.append(f"{label} missing type annotation for '{param.name}'")
+            continue
+        if not _is_schema_type(annotation):
+            errors.append(f"{label} has unsupported type annotation for '{param.name}'")
+    return_annotation = type_hints.get("return", signature.return_annotation)
+    if return_annotation is inspect._empty:
+        errors.append(f"{label} missing return type annotation")
+    elif not _is_schema_type(return_annotation):
+        errors.append(f"{label} has unsupported return type annotation")
+    return errors
+
+
+def _validate_definition_group(
+    group_name: str, definitions: tuple[tuple[str, str], ...]
+) -> list[str]:
+    errors: list[str] = []
+    seen: set[str] = set()
+    for index, definition in enumerate(definitions):
+        if not isinstance(definition, tuple) or len(definition) != 2:
+            errors.append(f"{group_name}[{index}] must be a (name, description) tuple")
+            continue
+        name, description = definition
+        if not isinstance(name, str) or not name.strip():
+            errors.append(f"{group_name}[{index}] has invalid name")
+        if name in seen:
+            errors.append(f"{group_name} '{name}' is duplicated")
+        else:
+            seen.add(name)
+        if not isinstance(description, str) or not description.strip():
+            errors.append(f"{group_name}[{index}] has invalid description")
+        func = globals().get(name)
+        if func is None or not callable(func):
+            errors.append(f"{group_name} '{name}' missing callable implementation")
+            continue
+        errors.extend(_validate_callable_schema(f"{group_name} '{name}'", func))
+    return errors
+
+
+def _validate_server_metadata(metadata_payload: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    for key in ("name", "version", "description"):
+        value = metadata_payload.get(key)
+        if not isinstance(value, str) or not value.strip():
+            errors.append(f"metadata '{key}' must be a non-empty string")
+    capabilities = metadata_payload.get("capabilities")
+    if not isinstance(capabilities, dict):
+        return errors + ["metadata 'capabilities' must be a dict"]
+    expected = {
+        "tools": [name for name, _ in TOOL_DEFINITIONS],
+        "resources": [name for name, _ in RESOURCE_DEFINITIONS],
+        "prompts": [name for name, _ in PROMPT_DEFINITIONS],
+    }
+    for key, expected_names in expected.items():
+        value = capabilities.get(key)
+        if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
+            errors.append(f"metadata 'capabilities.{key}' must be a list of strings")
+            continue
+        if value != expected_names:
+            errors.append(f"metadata 'capabilities.{key}' does not match definitions")
+    return errors
+
+
+def _validate_mcp_schemas(metadata_payload: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    errors.extend(_validate_definition_group("tool", TOOL_DEFINITIONS))
+    errors.extend(_validate_definition_group("resource", RESOURCE_DEFINITIONS))
+    errors.extend(_validate_definition_group("prompt", PROMPT_DEFINITIONS))
+    errors.extend(_validate_server_metadata(metadata_payload))
+    return errors
+
+
+def validate_mcp_schemas(metadata_payload: dict[str, Any]) -> None:
+    errors = _validate_mcp_schemas(metadata_payload)
+    if not errors:
+        return
+    message = "MCP schema validation failed:\n" + "\n".join(f"- {error}" for error in errors)
+    raise SchemaValidationError(message)
 
 
 def _load_fastmcp() -> type:
@@ -230,6 +345,7 @@ def _apply_metadata(server: Any, metadata_payload: dict[str, Any]) -> None:
 def build_server() -> Any:
     FastMCP = _load_fastmcp()
     metadata_payload = _server_metadata()
+    validate_mcp_schemas(metadata_payload)
     _log_event(
         "server_build_start",
         name=metadata_payload["name"],
