@@ -11,7 +11,7 @@ Keep streaming logic compatible with multi-file outputs.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex (2025-12-20)
 - Target Milestone: TBD
-- Links: N/A
+- Links: src/renderer/streaming.py, tests/renderer/test_stream_markdown_sections.py

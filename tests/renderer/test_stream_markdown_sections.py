@@ -1,6 +1,6 @@
 import io
 
-from src.renderer.streaming import stream_markdown_sections
+from src.renderer.streaming import stream_markdown_files, stream_markdown_sections
 
 
 class RecordingTarget:
@@ -37,3 +37,19 @@ def test_stream_markdown_sections_flushes_per_heading_section():
 
     assert target.getvalue() == source_text
     assert target.flush_count == 3
+
+
+def test_stream_markdown_files_wraps_each_file_with_markers():
+    files = [
+        ("ONE.md", io.StringIO("## Section\nContent A\n")),
+        ("TWO.md", io.StringIO("Intro\n## Section\nContent B\n")),
+    ]
+    target = io.StringIO()
+
+    stream_markdown_files(files, target)
+
+    assert (
+        target.getvalue()
+        == "BEGIN FILE ONE.md\n## Section\nContent A\nEND FILE ONE.md\n"
+        "BEGIN FILE TWO.md\nIntro\n## Section\nContent B\nEND FILE TWO.md\n"
+    )

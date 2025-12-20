@@ -50,7 +50,7 @@ def emit_file_footer(target: TextIO, filename: str) -> None:
     target.flush()
 
 
-def stream_markdown_sections(source: TextIO, target: TextIO) -> None:
+def stream_markdown_sections(source: Iterable[str], target: TextIO) -> None:
     buffer: list[str] = []
     in_code_block = False
 
@@ -70,3 +70,10 @@ def stream_markdown_sections(source: TextIO, target: TextIO) -> None:
         buffer.append(line)
 
     flush_buffer()
+
+
+def stream_markdown_files(files: Iterable[tuple[str, Iterable[str]]], target: TextIO) -> None:
+    for filename, source in files:
+        emit_file_header(target, filename)
+        stream_markdown_sections(source, target)
+        emit_file_footer(target, filename)
