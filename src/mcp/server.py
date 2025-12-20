@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+import logging
 from pathlib import Path
 from typing import Any, Callable
 
@@ -12,22 +14,33 @@ SERVER_NAME = "agentcfg-migrator"
 SERVER_DESCRIPTION = "Agent configuration migrator MCP server."
 DEFAULT_VERSION = "0.0.0"
 
+_LOGGER = logging.getLogger("agentcfg.mcp")
+
+
+def _log_event(event: str, **fields: object) -> None:
+    payload = {"event": event, **fields}
+    _LOGGER.info(json.dumps(payload, ensure_ascii=True))
+
 
 class FastMCPLoadError(RuntimeError):
     """Raised when FastMCP is not installed."""
 
 
 def _load_fastmcp() -> type:
+    _log_event("fastmcp_load_start")
     try:
         from fastmcp import FastMCP  # type: ignore[import-not-found]
 
+        _log_event("fastmcp_load_success", provider="fastmcp")
         return FastMCP
     except ImportError:
         try:
             from mcp.server.fastmcp import FastMCP  # type: ignore[import-not-found]
 
+            _log_event("fastmcp_load_success", provider="mcp.server.fastmcp")
             return FastMCP
         except ImportError as exc:
+            _log_event("fastmcp_load_error", message=str(exc))
             raise FastMCPLoadError(
                 "FastMCP is required to run the MCP server. "
                 "Install it in the active environment before starting the server."
@@ -98,19 +111,28 @@ def _apply_metadata(server: Any, metadata_payload: dict[str, Any]) -> None:
 def build_server() -> Any:
     FastMCP = _load_fastmcp()
     metadata_payload = _server_metadata()
+    _log_event(
+        "server_build_start",
+        name=metadata_payload["name"],
+        version=metadata_payload["version"],
+    )
     server = _init_server(FastMCP, metadata_payload)
     _apply_metadata(server, metadata_payload)
+    _log_event("server_build_complete", name=metadata_payload["name"])
     return server
 
 
 def _run_with_stdio(server: Any) -> None:
     if hasattr(server, "run_stdio"):
+        _log_event("server_run_stdio", method="run_stdio")
         server.run_stdio()
         return
     run: Callable[..., Any] = server.run
     try:
+        _log_event("server_run_stdio", method="run", transport="stdio")
         run(transport="stdio")
     except TypeError:
+        _log_event("server_run_stdio", method="run", transport="default")
         run()
 
 
