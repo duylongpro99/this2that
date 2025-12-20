@@ -30,6 +30,9 @@ class AgentDefinition:
     agent_id: str
     display_name: str
     artifacts: tuple[AgentArtifact, ...]
+    config_filenames: tuple[str, ...] = ()
+    directory_patterns: tuple[str, ...] = ()
+    precedence_rules: tuple[str, ...] = ()
     aliases: tuple[str, ...] = ()
 
     def to_dict(self) -> dict[str, object]:
@@ -37,6 +40,9 @@ class AgentDefinition:
             "agent_id": self.agent_id,
             "display_name": self.display_name,
             "aliases": list(self.aliases),
+            "config_filenames": list(self.config_filenames),
+            "directory_patterns": list(self.directory_patterns),
+            "precedence_rules": list(self.precedence_rules),
             "artifacts": [artifact.to_dict() for artifact in self.artifacts],
         }
 
@@ -62,6 +68,10 @@ def default_registry() -> AgentRegistry:
                 agent_id="claude",
                 display_name="Claude",
                 aliases=("claude", "claude code", "claude.md", "claude-md"),
+                config_filenames=("CLAUDE.md",),
+                precedence_rules=(
+                    "Single-file config; no directory override behavior.",
+                ),
                 artifacts=(
                     AgentArtifact(
                         pattern="CLAUDE.md",
@@ -74,6 +84,10 @@ def default_registry() -> AgentRegistry:
                 agent_id="codex",
                 display_name="Codex",
                 aliases=("codex", "openai codex", "agents.md", "agents-md"),
+                config_filenames=("AGENTS.md",),
+                precedence_rules=(
+                    "Nearest AGENTS.md to the working directory overrides parent instructions.",
+                ),
                 artifacts=(
                     AgentArtifact(
                         pattern="AGENTS.md",
@@ -86,6 +100,10 @@ def default_registry() -> AgentRegistry:
                 agent_id="gemini",
                 display_name="Gemini",
                 aliases=("gemini", "gemini cli", "gemini.md", "gemini-md"),
+                config_filenames=("GEMINI.md",),
+                precedence_rules=(
+                    "Single-file config; no directory override behavior.",
+                ),
                 artifacts=(
                     AgentArtifact(
                         pattern="GEMINI.md",
@@ -98,6 +116,10 @@ def default_registry() -> AgentRegistry:
                 agent_id="kiro",
                 display_name="Kiro",
                 aliases=("kiro", "kiro cli", "kiro.md", "kiro-md"),
+                directory_patterns=(".kiro/steering",),
+                precedence_rules=(
+                    "Steering files combine by intent; nearest bundle takes precedence.",
+                ),
                 artifacts=(
                     AgentArtifact(
                         pattern=".kiro/steering/*.md",

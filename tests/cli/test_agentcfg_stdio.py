@@ -156,3 +156,14 @@ def test_migrate_json_logs_events(tmp_path):
     assert result.stdout == "BEGIN FILE -\njson logs\nEND FILE -\n"
     events = [json.loads(line)["event"] for line in result.stderr.strip().splitlines()]
     assert events == ["resolved_paths", "stream_start", "stream_end"]
+
+
+def test_migrate_rejects_unknown_agents(tmp_path):
+    source = tmp_path / "source.md"
+    source.write_text("content\n", encoding="utf-8")
+    result = run_agentcfg(
+        ["migrate", "--from", "unknown", "--to", "codex", "--input", str(source), "--output", "-"]
+    )
+
+    assert result.returncode == 2
+    assert "unknown agent" in result.stderr

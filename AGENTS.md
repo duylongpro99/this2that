@@ -56,3 +56,5 @@
 - 2025-12-20: codex completed T020; defined MCP prompt registration and placeholder.
 - 2025-12-20: codex completed T021; validated MCP schemas.
 - 2025-12-20: codex completed T022; created agent registry data model and defaults.
+- 2025-12-20: codex completed T023; stored agent metadata fields for registry entries.
+- 2025-12-20: codex completed T024; added runtime validation for unknown agents.

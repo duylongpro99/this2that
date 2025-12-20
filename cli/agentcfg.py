@@ -8,11 +8,8 @@ import sys
 from pathlib import Path
 from typing import TextIO
 
-from src.renderer.streaming import (
-    emit_file_footer,
-    emit_file_header,
-    stream_markdown_sections,
-)
+from src.registry import resolve_agent_id
+from src.renderer.streaming import emit_file_footer, emit_file_header, stream_markdown_sections
 
 
 CHUNK_SIZE = 4096
@@ -45,10 +42,6 @@ def _stream_copy(source: TextIO, target: TextIO) -> None:
         target.flush()
 
 
-def _normalize_agent_name(name: str) -> str:
-    return name.strip().lower()
-
-
 def _find_workspace_root(start: Path) -> Path:
     for current in (start, *start.parents):
         for marker in WORKSPACE_MARKERS:
@@ -68,8 +61,8 @@ def _default_agent_file(agent: str) -> str:
 
 def _resolve_paths(args: argparse.Namespace) -> tuple[str, str]:
     workspace_root = _find_workspace_root(Path.cwd())
-    source_agent = _normalize_agent_name(args.source_agent)
-    target_agent = _normalize_agent_name(args.target_agent)
+    source_agent = resolve_agent_id(args.source_agent)
+    target_agent = resolve_agent_id(args.target_agent)
 
     if args.input in (None, ""):
         input_path = workspace_root / _default_agent_file(source_agent)

@@ -16,6 +16,7 @@ def test_default_registry_serializes_artifacts() -> None:
 
     agents = {agent["agent_id"]: agent for agent in registry_payload["agents"]}
     kiro_artifacts = agents["kiro"]["artifacts"]
+    codex_precedence = agents["codex"]["precedence_rules"]
 
     assert kiro_artifacts == [
         {
@@ -23,4 +24,7 @@ def test_default_registry_serializes_artifacts() -> None:
             "kind": ArtifactKind.glob.value,
             "description": "Kiro steering bundle markdown files.",
         }
+    ]
+    assert codex_precedence == [
+        "Nearest AGENTS.md to the working directory overrides parent instructions."
     ]
