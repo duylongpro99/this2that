@@ -53,3 +53,4 @@
 - 2025-12-20: codex completed T017; added structured logging hooks for MCP server operations.
 - 2025-12-20: codex completed T018; defined MCP tools with placeholder registrations.
 - 2025-12-20: codex completed T019; defined MCP resources with placeholder registrations.
+- 2025-12-20: codex completed T020; defined MCP prompt registration and placeholder.

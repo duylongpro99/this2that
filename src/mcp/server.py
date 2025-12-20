@@ -23,6 +23,9 @@ RESOURCE_DEFINITIONS = (
     ("agent_registry", "Supported agents and config artifacts."),
     ("concept_ontology", "Normalized concept ontology definitions."),
 )
+PROMPT_DEFINITIONS = (
+    ("migrate_config_prompt", "Guide migrating config from one agent to another."),
+)
 
 _LOGGER = logging.getLogger("agentcfg.mcp")
 
@@ -83,7 +86,7 @@ def _server_capabilities() -> dict[str, list[str]]:
     return {
         "tools": [name for name, _ in TOOL_DEFINITIONS],
         "resources": [name for name, _ in RESOURCE_DEFINITIONS],
-        "prompts": [],
+        "prompts": [name for name, _ in PROMPT_DEFINITIONS],
     }
 
 
@@ -147,6 +150,16 @@ def concept_ontology() -> dict[str, object]:
     return {"version": "v0", "concepts": []}
 
 
+def migrate_config_prompt(from_agent: str, to_agent: str, input_path: str) -> str:
+    """Placeholder MCP prompt for guiding a migration workflow."""
+    return (
+        "Migrate agent configuration from "
+        f"{from_agent} to {to_agent} using input at {input_path}. "
+        "Detect the source, parse into a normalized representation, map concepts to the target, "
+        "and render the output with streamed sections."
+    )
+
+
 def _register_tools(server: Any) -> None:
     tool_attr = getattr(server, "tool", None)
     if not callable(tool_attr):
@@ -185,6 +198,25 @@ def _register_resources(server: Any) -> None:
         _log_event("resource_register_complete", resource=name)
 
 
+def _register_prompts(server: Any) -> None:
+    prompt_attr = getattr(server, "prompt", None)
+    if not callable(prompt_attr):
+        _log_event("prompt_register_skipped", reason="prompt_not_available")
+        return
+    for name, description in PROMPT_DEFINITIONS:
+        func = globals()[name]
+        try:
+            decorator = prompt_attr(name=name, description=description)
+            decorator(func)
+        except TypeError:
+            try:
+                prompt_attr(func)
+            except Exception as exc:  # pragma: no cover - defensive logging
+                _log_event("prompt_register_error", prompt=name, message=str(exc))
+                continue
+        _log_event("prompt_register_complete", prompt=name)
+
+
 def _apply_metadata(server: Any, metadata_payload: dict[str, Any]) -> None:
     if hasattr(server, "metadata"):
         try:
@@ -207,6 +239,7 @@ def build_server() -> Any:
     _apply_metadata(server, metadata_payload)
     _register_tools(server)
     _register_resources(server)
+    _register_prompts(server)
     _log_event("server_build_complete", name=metadata_payload["name"])
     return server
 
