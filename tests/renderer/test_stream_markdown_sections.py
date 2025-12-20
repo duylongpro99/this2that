@@ -49,7 +49,6 @@ def test_stream_markdown_files_wraps_each_file_with_markers():
     stream_markdown_files(files, target)
 
     assert (
-        target.getvalue()
-        == "BEGIN FILE ONE.md\n## Section\nContent A\nEND FILE ONE.md\n"
+        target.getvalue() == "BEGIN FILE ONE.md\n## Section\nContent A\nEND FILE ONE.md\n"
         "BEGIN FILE TWO.md\nIntro\n## Section\nContent B\nEND FILE TWO.md\n"
     )

@@ -62,71 +62,75 @@ class AgentRegistry:
 
 
 def default_registry() -> AgentRegistry:
+    agents = (
+        AgentDefinition(
+            agent_id="claude",
+            display_name="Claude",
+            aliases=("claude", "claude code", "claude.md", "claude-md"),
+            config_filenames=("CLAUDE.md",),
+            precedence_rules=("Single-file config; no directory override behavior.",),
+            artifacts=(
+                AgentArtifact(
+                    pattern="CLAUDE.md",
+                    kind=ArtifactKind.file,
+                    description="Single-file Claude instructions.",
+                ),
+            ),
+        ),
+        AgentDefinition(
+            agent_id="codex",
+            display_name="Codex",
+            aliases=("codex", "openai codex", "agents.md", "agents-md"),
+            config_filenames=("AGENTS.md",),
+            precedence_rules=(
+                "Nearest AGENTS.md to the working directory overrides parent instructions.",
+            ),
+            artifacts=(
+                AgentArtifact(
+                    pattern="AGENTS.md",
+                    kind=ArtifactKind.file,
+                    description="Codex instructions with root and nested overrides.",
+                ),
+            ),
+        ),
+        AgentDefinition(
+            agent_id="gemini",
+            display_name="Gemini",
+            aliases=("gemini", "gemini cli", "gemini.md", "gemini-md"),
+            config_filenames=("GEMINI.md",),
+            precedence_rules=("Single-file config; no directory override behavior.",),
+            artifacts=(
+                AgentArtifact(
+                    pattern="GEMINI.md",
+                    kind=ArtifactKind.file,
+                    description="Single-file Gemini instructions.",
+                ),
+            ),
+        ),
+        AgentDefinition(
+            agent_id="kiro",
+            display_name="Kiro",
+            aliases=("kiro", "kiro cli", "kiro.md", "kiro-md"),
+            directory_patterns=(".kiro/steering",),
+            precedence_rules=(
+                "Steering files combine by intent; nearest bundle takes precedence.",
+            ),
+            artifacts=(
+                AgentArtifact(
+                    pattern=".kiro/steering/*.md",
+                    kind=ArtifactKind.glob,
+                    description="Kiro steering bundle markdown files.",
+                ),
+            ),
+        ),
+    )
+    try:
+        from .plugins import load_registry_extensions, merge_agent_definitions
+    except ImportError:
+        return AgentRegistry(agents=agents)
+    extensions = load_registry_extensions()
+    if extensions:
+        agents = merge_agent_definitions(agents, extensions)
     return AgentRegistry(
-        agents=(
-            AgentDefinition(
-                agent_id="claude",
-                display_name="Claude",
-                aliases=("claude", "claude code", "claude.md", "claude-md"),
-                config_filenames=("CLAUDE.md",),
-                precedence_rules=(
-                    "Single-file config; no directory override behavior.",
-                ),
-                artifacts=(
-                    AgentArtifact(
-                        pattern="CLAUDE.md",
-                        kind=ArtifactKind.file,
-                        description="Single-file Claude instructions.",
-                    ),
-                ),
-            ),
-            AgentDefinition(
-                agent_id="codex",
-                display_name="Codex",
-                aliases=("codex", "openai codex", "agents.md", "agents-md"),
-                config_filenames=("AGENTS.md",),
-                precedence_rules=(
-                    "Nearest AGENTS.md to the working directory overrides parent instructions.",
-                ),
-                artifacts=(
-                    AgentArtifact(
-                        pattern="AGENTS.md",
-                        kind=ArtifactKind.file,
-                        description="Codex instructions with root and nested overrides.",
-                    ),
-                ),
-            ),
-            AgentDefinition(
-                agent_id="gemini",
-                display_name="Gemini",
-                aliases=("gemini", "gemini cli", "gemini.md", "gemini-md"),
-                config_filenames=("GEMINI.md",),
-                precedence_rules=(
-                    "Single-file config; no directory override behavior.",
-                ),
-                artifacts=(
-                    AgentArtifact(
-                        pattern="GEMINI.md",
-                        kind=ArtifactKind.file,
-                        description="Single-file Gemini instructions.",
-                    ),
-                ),
-            ),
-            AgentDefinition(
-                agent_id="kiro",
-                display_name="Kiro",
-                aliases=("kiro", "kiro cli", "kiro.md", "kiro-md"),
-                directory_patterns=(".kiro/steering",),
-                precedence_rules=(
-                    "Steering files combine by intent; nearest bundle takes precedence.",
-                ),
-                artifacts=(
-                    AgentArtifact(
-                        pattern=".kiro/steering/*.md",
-                        kind=ArtifactKind.glob,
-                        description="Kiro steering bundle markdown files.",
-                    ),
-                ),
-            ),
-        )
+        agents=agents,
     )

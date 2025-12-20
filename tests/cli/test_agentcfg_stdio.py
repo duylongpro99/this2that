@@ -104,7 +104,9 @@ def test_migrate_dry_run_skips_default_output_write(tmp_path):
 
     assert result.returncode == 0
     expected_output = repo / "AGENTS.md"
-    assert result.stdout == f"BEGIN FILE {expected_output}\nroot content\nEND FILE {expected_output}\n"
+    assert (
+        result.stdout == f"BEGIN FILE {expected_output}\nroot content\nEND FILE {expected_output}\n"
+    )
     assert result.stderr == ""
     assert not (repo / "AGENTS.md").exists()
 

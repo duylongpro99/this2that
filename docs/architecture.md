@@ -59,6 +59,14 @@ Context7’s job is to inject up-to-date, version-specific docs into the LLM con
 * Enables dynamic “agent mentioned by user” handling.
 * Drives which parsers/renderers to load.
 
+**Extensibility**
+
+* Registry extensions load from `agentcfg.registry.toml` in the current working directory or from
+  a path set in `AGENTCFG_REGISTRY_CONFIG`.
+* Plugins can register `agentcfg.registry` entry points that return `AgentDefinition` objects or
+  dicts matching the registry schema.
+* Plugin entries cannot override core agent IDs; collisions are skipped with warnings.
+
 **Initial supported agents and normalization**
 
 * Canonical IDs are lowercase: `claude`, `codex`, `gemini`, `kiro`.

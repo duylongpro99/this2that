@@ -30,6 +30,4 @@ def resolve_agent_id(name: str, registry: AgentRegistry | None = None) -> str:
             if normalize_agent_name(alias) == normalized:
                 return agent.agent_id
     supported = ", ".join(sorted(agent.agent_id for agent in registry.agents))
-    raise UnknownAgentError(
-        f"unknown agent '{name}'; supported agents: {supported}"
-    )
+    raise UnknownAgentError(f"unknown agent '{name}'; supported agents: {supported}")

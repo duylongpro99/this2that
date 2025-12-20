@@ -58,3 +58,4 @@
 - 2025-12-20: codex completed T022; created agent registry data model and defaults.
 - 2025-12-20: codex completed T023; stored agent metadata fields for registry entries.
 - 2025-12-20: codex completed T024; added runtime validation for unknown agents.
+- 2025-12-20: codex completed T025; enabled registry extensions via config and plugins.
