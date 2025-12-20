@@ -12,7 +12,7 @@ from typing import Any, Callable, Union, get_args, get_origin, get_type_hints
 import tomllib
 from importlib import metadata
 
-from src.registry import default_registry
+from src.registry import default_registry, detect_agent_configs
 
 SERVER_NAME = "agentcfg-migrator"
 SERVER_DESCRIPTION = "Agent configuration migrator MCP server."
@@ -229,8 +229,12 @@ def _init_server(FastMCP: type, metadata_payload: dict[str, Any]) -> Any:
 
 
 def detect_agent_config(workspace_path: str) -> dict[str, object]:
-    """Placeholder MCP tool for workspace detection."""
-    return {"workspace_path": workspace_path, "candidates": []}
+    """MCP tool for workspace detection."""
+    detections = detect_agent_configs(workspace_path)
+    return {
+        "workspace_path": workspace_path,
+        "candidates": [detection.to_dict() for detection in detections],
+    }
 
 
 def parse_config(agent: str, files: list[str]) -> dict[str, object]:

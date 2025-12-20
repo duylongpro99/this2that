@@ -58,6 +58,8 @@ Context7’s job is to inject up-to-date, version-specific docs into the LLM con
 
 * Enables dynamic “agent mentioned by user” handling.
 * Drives which parsers/renderers to load.
+* Workspace detection walks the repository recursively, skipping common ignore folders
+  (`.git`, `.venv`, `node_modules`, `__pycache__`).
 
 **Extensibility**
 
