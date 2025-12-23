@@ -68,5 +68,6 @@
 - 2025-12-23: codex completed T032; implemented doc-fetch orchestration strategy.
 - 2025-12-23: codex completed T035; normalized docs into AgentDocModel.
 - 2025-12-23: codex completed T036; warned on mixed doc versions in AgentDocModel.
+- 2025-12-23: codex completed T037; implemented markdown AST parsing.
 - 2025-12-24: codex completed T033; added TTL-based doc-fetch caching layer.
 - 2025-12-24: codex completed T034; extracted documentation into AgentDocModel inputs.

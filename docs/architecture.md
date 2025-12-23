@@ -134,6 +134,10 @@ A structured object like:
 * `sections`: [{title, body, tags}]
 * `directives`: normalized concepts (see section 3)
 
+**Implementation notes**
+
+* Markdown AST parsing lives in `src/parser/markdown_ast.py`.
+
 ---
 
 ### 2.4 Concept Ontology + Normalizer

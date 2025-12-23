@@ -11,7 +11,9 @@ Implement markdown AST parsing for config sources.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex
+- Claimed: 2025-12-23
+- Completed: 2025-12-23
 - Target Milestone: TBD
-- Links: N/A
+- Links: src/parser/markdown_ast.py, tests/parser/test_markdown_ast.py, docs/architecture.md
