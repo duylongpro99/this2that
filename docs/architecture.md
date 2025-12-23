@@ -100,6 +100,10 @@ Context7’s job is to inject up-to-date, version-specific docs into the LLM con
 
 * Given `{agent_name, topic=config/instructions, version?}`, retrieve the *latest* docs/snippets/examples.
 * Cache results with TTL to reduce repeated calls.
+* Use standardized Context7 query templates for config format, precedence, and examples
+  (`docs/context7-query-templates.md`).
+* Orchestrate doc fetches with a default LLM-direct path and a fallback fetcher abstraction
+  (`src/doc_fetch.py`).
 
 **Two deployment patterns**
 

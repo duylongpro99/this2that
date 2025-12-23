@@ -11,7 +11,7 @@ Implement doc-fetch orchestration (Context7 direct via LLM; fallback fetcher abs
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex (2025-12-23)
 - Target Milestone: TBD
-- Links: N/A
+- Links: `src/doc_fetch.py`, `tests/doc_fetch/test_orchestration.py`, `docs/architecture.md`
