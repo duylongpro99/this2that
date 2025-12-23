@@ -66,3 +66,4 @@
 - 2025-12-21: codex completed T030; added confidence scoring and ordered detection candidates.
 - 2025-12-23: codex completed T031; defined Context7 query templates.
 - 2025-12-23: codex completed T032; implemented doc-fetch orchestration strategy.
+- 2025-12-24: codex completed T033; added TTL-based doc-fetch caching layer.

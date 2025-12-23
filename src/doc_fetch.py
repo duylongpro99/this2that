@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Mapping, Protocol, Sequence
+import time
+from typing import Callable, Mapping, Protocol, Sequence
 
 _QUERY_ORDER = ("config_format", "instruction_precedence", "examples")
 
@@ -64,6 +65,38 @@ class DocFetchResult:
     snippets: tuple[DocSnippet, ...]
 
 
+@dataclass(frozen=True)
+class DocCacheEntry:
+    value: DocFetchResult
+    expires_at: float
+
+
+class DocFetchCache:
+    def __init__(
+        self,
+        ttl_seconds: float = 3600.0,
+        now_fn: Callable[[], float] | None = None,
+    ) -> None:
+        self._ttl_seconds = ttl_seconds
+        self._now = now_fn or time.time
+        self._store: dict[tuple[object, ...], DocCacheEntry] = {}
+
+    def get(self, key: tuple[object, ...]) -> DocFetchResult | None:
+        entry = self._store.get(key)
+        if entry is None:
+            return None
+        if entry.expires_at <= self._now():
+            self._store.pop(key, None)
+            return None
+        return entry.value
+
+    def set(self, key: tuple[object, ...], value: DocFetchResult) -> None:
+        self._store[key] = DocCacheEntry(
+            value=value,
+            expires_at=self._now() + self._ttl_seconds,
+        )
+
+
 class DocFetcher(Protocol):
     def fetch(
         self, request: DocFetchRequest, queries: Sequence[DocFetchQuery]
@@ -93,10 +126,28 @@ def build_context7_queries(
     return queries
 
 
+def build_doc_cache_key(
+    request: DocFetchRequest,
+    queries: Sequence[DocFetchQuery],
+) -> tuple[object, ...]:
+    return (
+        request.agent_id,
+        request.agent_name,
+        request.config_scope or "",
+        tuple((query.topic, query.query) for query in queries),
+    )
+
+
 class DocFetchOrchestrator:
-    def __init__(self, fetcher: DocFetcher | None = None, prefer_llm_direct: bool = True) -> None:
+    def __init__(
+        self,
+        fetcher: DocFetcher | None = None,
+        prefer_llm_direct: bool = True,
+        cache: DocFetchCache | None = None,
+    ) -> None:
         self._fetcher = fetcher
         self._prefer_llm_direct = prefer_llm_direct
+        self._cache = cache
 
     def plan(
         self,
@@ -128,5 +179,17 @@ class DocFetchOrchestrator:
                 queries=plan.queries,
                 warnings=("fallback_fetcher_unavailable",),
             )
+        cache_key = build_doc_cache_key(request, plan.queries)
+        if self._cache is not None:
+            cached = self._cache.get(cache_key)
+            if cached is not None:
+                return cached
         snippets = tuple(self._fetcher.fetch(request, plan.queries))
-        return DocFetchResult(mode="fallback_fetcher", queries=plan.queries, snippets=snippets)
+        result = DocFetchResult(
+            mode="fallback_fetcher",
+            queries=plan.queries,
+            snippets=snippets,
+        )
+        if self._cache is not None:
+            self._cache.set(cache_key, result)
+        return result

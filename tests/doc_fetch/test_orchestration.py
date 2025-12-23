@@ -57,12 +57,69 @@ def test_orchestrator_warns_when_fallback_missing() -> None:
     assert "fallback_fetcher_unavailable" in plan.warnings
 
 
+def test_orchestrator_caches_fallback_fetcher() -> None:
+    request = doc_fetch.DocFetchRequest(agent_name="Claude", agent_id="claude")
+    fetcher = _CountingFetcher()
+    cache = doc_fetch.DocFetchCache(ttl_seconds=60.0)
+    orchestrator = doc_fetch.DocFetchOrchestrator(
+        fetcher=fetcher,
+        prefer_llm_direct=False,
+        cache=cache,
+    )
+
+    first = orchestrator.fetch(request)
+    second = orchestrator.fetch(request)
+
+    assert fetcher.calls == 1
+    assert isinstance(first, doc_fetch.DocFetchResult)
+    assert isinstance(second, doc_fetch.DocFetchResult)
+    assert first.snippets == second.snippets
+
+
+def test_orchestrator_cache_expires() -> None:
+    request = doc_fetch.DocFetchRequest(agent_name="Gemini", agent_id="gemini")
+    fetcher = _CountingFetcher()
+    now = [0.0]
+
+    def _now() -> float:
+        return now[0]
+
+    cache = doc_fetch.DocFetchCache(ttl_seconds=5.0, now_fn=_now)
+    orchestrator = doc_fetch.DocFetchOrchestrator(
+        fetcher=fetcher,
+        prefer_llm_direct=False,
+        cache=cache,
+    )
+
+    orchestrator.fetch(request)
+    now[0] = 10.0
+    orchestrator.fetch(request)
+
+    assert fetcher.calls == 2
+
+
 class _DummyFetcher:
     def __init__(self) -> None:
         self.called = False
 
     def fetch(self, request, queries):
         self.called = True
+        return [
+            doc_fetch.DocSnippet(
+                topic=queries[0].topic,
+                source="https://example.com",
+                content="doc snippet",
+                version="v1",
+            )
+        ]
+
+
+class _CountingFetcher:
+    def __init__(self) -> None:
+        self.calls = 0
+
+    def fetch(self, request, queries):
+        self.calls += 1
         return [
             doc_fetch.DocSnippet(
                 topic=queries[0].topic,
