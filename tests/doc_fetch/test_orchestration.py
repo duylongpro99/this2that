@@ -23,9 +23,7 @@ def test_build_context7_queries_includes_scope_hint() -> None:
 
 def test_orchestrator_prefers_llm_direct() -> None:
     request = doc_fetch.DocFetchRequest(agent_name="Codex", agent_id="codex")
-    orchestrator = doc_fetch.DocFetchOrchestrator(
-        fetcher=_DummyFetcher(), prefer_llm_direct=True
-    )
+    orchestrator = doc_fetch.DocFetchOrchestrator(fetcher=_DummyFetcher(), prefer_llm_direct=True)
 
     plan = orchestrator.plan(request)
 
@@ -35,9 +33,7 @@ def test_orchestrator_prefers_llm_direct() -> None:
 def test_orchestrator_falls_back_to_fetcher() -> None:
     request = doc_fetch.DocFetchRequest(agent_name="Gemini", agent_id="gemini")
     fetcher = _DummyFetcher()
-    orchestrator = doc_fetch.DocFetchOrchestrator(
-        fetcher=fetcher, prefer_llm_direct=False
-    )
+    orchestrator = doc_fetch.DocFetchOrchestrator(fetcher=fetcher, prefer_llm_direct=False)
 
     result = orchestrator.fetch(request)
 

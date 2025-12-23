@@ -47,7 +47,7 @@ def normalize_doc_inputs(
         constraint_groups,
         example_groups,
     )
-    warnings = _collect_warnings(file_groups, glob_groups)
+    warnings = _collect_warnings(file_groups, glob_groups, versions)
     return AgentDocModel(
         agent_id=agent_id,
         agent_name=agent_name,
@@ -156,8 +156,11 @@ def _collect_versions(*groups: Iterable[DocValueGroup]) -> tuple[str, ...]:
 def _collect_warnings(
     file_groups: Sequence[DocValueGroup],
     glob_groups: Sequence[DocValueGroup],
+    versions: Sequence[str],
 ) -> tuple[str, ...]:
     warnings: list[str] = []
     if not file_groups and not glob_groups:
         warnings.append("no_config_filenames_detected")
+    if len(versions) > 1:
+        warnings.append("doc_versions_mixed")
     return tuple(warnings)

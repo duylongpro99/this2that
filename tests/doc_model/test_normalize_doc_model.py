@@ -54,11 +54,10 @@ def test_normalize_doc_inputs_groups_filenames_and_directories() -> None:
     assert [group.value for group in model.structural_expectations] == [
         "Required sections: safety and tools."
     ]
-    assert [group.value for group in model.constraints] == [
-        "Max 12,000 tokens per file."
-    ]
+    assert [group.value for group in model.constraints] == ["Max 12,000 tokens per file."]
     assert [group.value for group in model.examples] == ["# Example\n\nFollow these rules."]
     assert model.versions == ("v1",)
+    assert "doc_versions_mixed" not in model.warnings
 
 
 def test_normalize_doc_inputs_aggregates_evidence() -> None:
@@ -87,3 +86,4 @@ def test_normalize_doc_inputs_aggregates_evidence() -> None:
     assert len(model.config_files) == 1
     assert len(model.config_files[0].evidence) == 2
     assert model.versions == ("v1", "v2")
+    assert "doc_versions_mixed" in model.warnings
