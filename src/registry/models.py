@@ -17,11 +17,14 @@ class AgentArtifact:
     pattern: str
     kind: ArtifactKind
     description: str | None = None
+    root_only: bool = False
 
     def to_dict(self) -> dict[str, object]:
         payload: dict[str, object] = {"pattern": self.pattern, "kind": self.kind.value}
         if self.description:
             payload["description"] = self.description
+        if self.root_only:
+            payload["root_only"] = True
         return payload
 
 
@@ -74,6 +77,7 @@ def default_registry() -> AgentRegistry:
                     pattern="CLAUDE.md",
                     kind=ArtifactKind.file,
                     description="Single-file Claude instructions.",
+                    root_only=True,
                 ),
             ),
         ),
@@ -104,6 +108,7 @@ def default_registry() -> AgentRegistry:
                     pattern="GEMINI.md",
                     kind=ArtifactKind.file,
                     description="Single-file Gemini instructions.",
+                    root_only=True,
                 ),
             ),
         ),

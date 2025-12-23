@@ -60,3 +60,5 @@
 - 2025-12-20: codex completed T024; added runtime validation for unknown agents.
 - 2025-12-20: codex completed T025; enabled registry extensions via config and plugins.
 - 2025-12-20: codex completed T026; implemented recursive workspace detection rules.
+- 2025-12-21: codex completed T027; enforced root-only detection for single-file configs.
+- 2025-12-21: codex completed T028; added nested override depth metadata to detections.

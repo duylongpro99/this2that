@@ -25,12 +25,14 @@ class AgentDetectionMatch:
     path: str
     artifact_pattern: str
     artifact_kind: str
+    depth: int
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, object]:
         return {
             "path": self.path,
             "artifact_pattern": self.artifact_pattern,
             "artifact_kind": self.artifact_kind,
+            "depth": self.depth,
         }
 
 
@@ -98,12 +100,16 @@ def detect_agent_configs(
         matches = matches_by_agent[agent.agent_id]
         if not matches:
             continue
-        matches.sort(key=lambda match: (match.path, match.artifact_pattern, match.artifact_kind))
+        matches.sort(
+            key=lambda match: (match.depth, match.path, match.artifact_pattern, match.artifact_kind)
+        )
         detections.append(AgentDetection(agent_id=agent.agent_id, matches=tuple(matches)))
     return detections
 
 
 def _matches_file(rel_path: str, filename: str, artifact: AgentArtifact) -> bool:
+    if artifact.root_only and "/" in rel_path:
+        return False
     if artifact.kind is ArtifactKind.file:
         if "/" in artifact.pattern or "\\" in artifact.pattern:
             return fnmatch.fnmatch(rel_path, artifact.pattern)
@@ -138,6 +144,7 @@ def _record_match(
             path=path,
             artifact_pattern=artifact.pattern,
             artifact_kind=artifact.kind.value,
+            depth=_path_depth(path),
         )
     )
 
@@ -145,3 +152,9 @@ def _record_match(
 def _relative_posix(root: Path, path: Path) -> str:
     rel_path = path.relative_to(root)
     return rel_path.as_posix()
+
+
+def _path_depth(path: str) -> int:
+    if path in ("", "."):
+        return 0
+    return path.count("/")

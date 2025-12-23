@@ -11,7 +11,15 @@ Detect root-level configuration files for each agent.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex
+- Claimed: 2025-12-21
+- Completed: 2025-12-21
 - Target Milestone: TBD
-- Links: N/A
+- Links:
+  - src/registry/models.py
+  - src/registry/detection.py
+  - tests/registry/test_detection.py
+
+## Summary
+- Enforced root-only detection for single-file agents and added coverage for Claude/Gemini.
