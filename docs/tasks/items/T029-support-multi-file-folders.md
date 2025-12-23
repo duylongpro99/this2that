@@ -11,7 +11,14 @@ Detect multi-file steering folders (e.g., .kiro/steering/*.md).
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex
+- Claimed: 2025-12-21
+- Completed: 2025-12-21
 - Target Milestone: TBD
-- Links: N/A
+- Links:
+  - src/registry/detection.py
+  - tests/registry/test_detection.py
+
+## Summary
+- Ensured multi-file steering bundles are detected and verified with multiple files.

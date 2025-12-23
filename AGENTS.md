@@ -62,3 +62,5 @@
 - 2025-12-20: codex completed T026; implemented recursive workspace detection rules.
 - 2025-12-21: codex completed T027; enforced root-only detection for single-file configs.
 - 2025-12-21: codex completed T028; added nested override depth metadata to detections.
+- 2025-12-21: codex completed T029; validated multi-file steering detection for Kiro bundles.
+- 2025-12-21: codex completed T030; added confidence scoring and ordered detection candidates.

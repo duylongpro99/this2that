@@ -40,11 +40,13 @@ class AgentDetectionMatch:
 class AgentDetection:
     agent_id: str
     matches: tuple[AgentDetectionMatch, ...]
+    confidence: float
 
     def to_dict(self) -> dict[str, object]:
         return {
             "agent_id": self.agent_id,
             "matches": [match.to_dict() for match in self.matches],
+            "confidence": self.confidence,
         }
 
 
@@ -103,7 +105,14 @@ def detect_agent_configs(
         matches.sort(
             key=lambda match: (match.depth, match.path, match.artifact_pattern, match.artifact_kind)
         )
-        detections.append(AgentDetection(agent_id=agent.agent_id, matches=tuple(matches)))
+        detections.append(
+            AgentDetection(
+                agent_id=agent.agent_id,
+                matches=tuple(matches),
+                confidence=_confidence_for_matches(matches),
+            )
+        )
+    detections.sort(key=lambda detection: (-detection.confidence, detection.agent_id))
     return detections
 
 
@@ -158,3 +167,20 @@ def _path_depth(path: str) -> int:
     if path in ("", "."):
         return 0
     return path.count("/")
+
+
+def _confidence_for_matches(matches: list[AgentDetectionMatch]) -> float:
+    if not matches:
+        return 0.0
+    base = max(_confidence_for_match(match) for match in matches)
+    if len(matches) == 1:
+        return base
+    bonus = 0.05 * (len(matches) - 1)
+    return min(1.0, base + bonus)
+
+
+def _confidence_for_match(match: AgentDetectionMatch) -> float:
+    score = 1.0 / (match.depth + 1)
+    if match.artifact_kind == ArtifactKind.directory.value:
+        score *= 0.4
+    return score

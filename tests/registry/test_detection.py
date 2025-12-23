@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import math
 from pathlib import Path
 
 from src.registry import detect_agent_configs
@@ -14,6 +15,7 @@ def test_detect_agent_configs_recurses_and_ignores_git(tmp_path) -> None:
     _touch(tmp_path / "AGENTS.md")
     _touch(tmp_path / "nested" / "AGENTS.md")
     _touch(tmp_path / ".kiro" / "steering" / "setup.md")
+    _touch(tmp_path / ".kiro" / "steering" / "rules.md")
     _touch(tmp_path / ".git" / "AGENTS.md")
 
     detections = detect_agent_configs(tmp_path)
@@ -25,9 +27,9 @@ def test_detect_agent_configs_recurses_and_ignores_git(tmp_path) -> None:
     kiro_depths = {match.path: match.depth for match in detection_map["kiro"].matches}
 
     assert codex_matches == ["AGENTS.md", "nested/AGENTS.md"]
-    assert kiro_matches == [".kiro/steering/setup.md"]
+    assert kiro_matches == [".kiro/steering/rules.md", ".kiro/steering/setup.md"]
     assert codex_depths == {"AGENTS.md": 0, "nested/AGENTS.md": 1}
-    assert kiro_depths == {".kiro/steering/setup.md": 2}
+    assert kiro_depths == {".kiro/steering/rules.md": 2, ".kiro/steering/setup.md": 2}
 
 
 def test_detect_agent_configs_limits_root_only_files(tmp_path) -> None:
@@ -44,3 +46,19 @@ def test_detect_agent_configs_limits_root_only_files(tmp_path) -> None:
 
     assert claude_matches == ["CLAUDE.md"]
     assert gemini_matches == ["GEMINI.md"]
+
+
+def test_detect_agent_configs_orders_candidates_by_confidence(tmp_path) -> None:
+    _touch(tmp_path / "CLAUDE.md")
+    _touch(tmp_path / "nested" / "AGENTS.md")
+    _touch(tmp_path / ".kiro" / "steering" / "setup.md")
+
+    detections = detect_agent_configs(tmp_path)
+
+    assert [detection.agent_id for detection in detections] == ["claude", "codex", "kiro"]
+
+    confidence = {detection.agent_id: detection.confidence for detection in detections}
+
+    assert math.isclose(confidence["claude"], 1.0)
+    assert math.isclose(confidence["codex"], 0.5)
+    assert math.isclose(confidence["kiro"], 1 / 3)
