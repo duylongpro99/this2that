@@ -11,7 +11,7 @@ Extract filenames, structural expectations, and constraints from docs.
 - Goal is documented, implemented, or planned with clear owner and status.
 - Outputs are linked back to the backlog with evidence (code, tests, docs, or decisions).
 ## Tracking
-- Status: TODO
-- Owner: Unassigned
+- Status: Done
+- Owner: codex
 - Target Milestone: TBD
-- Links: N/A
+- Links: src/doc_extract.py, tests/doc_extract/test_extract_inputs.py
